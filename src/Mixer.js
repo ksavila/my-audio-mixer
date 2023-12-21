@@ -6,10 +6,8 @@ const AudioMixer = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [currentPosition, setCurrentPosition] = useState(0);
-    const [timeAtPause, setTimeAtPause] = useState(0);
     const isAnyTrackSoloed = tracks.some(track => track.isSolo);
     var [startTime, setStartTime] = useState(null);
-    var [lastStartTime, setLastStartTime] = useState(null);
     const [pauseTime, setPauseTime] = useState(null);
     const intervalIdRef = useRef(null);
 
@@ -19,8 +17,7 @@ const AudioMixer = () => {
     useEffect(() => {
         const ac = new AudioContext();
         setAudioContext(ac);
-
-        const trackSources = ['/drums.mp3', '/bass.mp3', '/guitar.mp3', '/click.mp3', '/preroll.mp3'];
+        const trackSources = [process.env.PUBLIC_URL + '/drums.mp3', process.env.PUBLIC_URL + '/bass.mp3', process.env.PUBLIC_URL + '/guitar.mp3', process.env.PUBLIC_URL + '/click.mp3', process.env.PUBLIC_URL + '/preroll.mp3'];
         const trackNodes = trackSources.map((source, index) => ({
             id: index,
             source,
@@ -62,7 +59,6 @@ const AudioMixer = () => {
         if (!startTime) {
             setStartTime(audioContext.currentTime);
         }
-        setLastStartTime(audioContext.currentTime);
 
         tracks.forEach(track => {
             if (track.buffer && !track.audioBufferSourceNode) {
@@ -126,7 +122,6 @@ const AudioMixer = () => {
 
         const elapsed = audioContext.currentTime - startTime;
         setPauseTime(elapsed); // Store the total elapsed time
-        setTimeAtPause(lastStartTime + audioContext.currentTime - lastStartTime);
         console.log(audioContext.currentTime);
 
         if (!shouldBePlaying) {
